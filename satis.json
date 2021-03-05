@@ -1,0 +1,32 @@
+{
+    "name": "tangrufus/saitis-demo",
+    "homepage": "https://saitis-demo.herokuapp.com",
+    "output-dir": "build",
+    "output-html": true,
+    "repositories": [
+        {
+            "type": "github",
+            "url": "https://github.com/tangrufus/aaa"
+        },
+        {
+            "type": "github",
+            "url": "https://github.com/tangrufus/bbb"
+        }
+    ],
+    "require": {
+        "tangrufus/aaa": "*",
+        "tangrufus/bbb": "*"
+    },
+    "archive": {
+        "directory": "dist",
+        "format": "zip",
+        "skip-dev": true,
+        "checksum": false,
+        "rearchive": true
+    },
+    "minimum-stability": "stable",
+    "require-all": false,
+    "require-dependencies": false,
+    "require-dev-dependencies": false,
+    "providers": true
+}

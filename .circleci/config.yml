@@ -1,0 +1,63 @@
+version: 2.1
+
+orbs:
+  heroku: circleci/heroku@1
+
+executors:
+  satis:
+    docker:
+      - image: composer/satis
+
+jobs:
+  build:
+    executor: satis
+    steps:
+      - run: php --version
+
+      - checkout
+
+      - restore_cache:
+          keys:
+            - build-v1-
+
+      - run: /satis/bin/satis build satis.json
+
+      - save_cache:
+          key: build-v9-{{ checksum "build/packages.json" }}
+          paths:
+            - build
+      - persist_to_workspace:
+          root: /root/project
+          paths:
+            - build
+      - store_artifacts:
+          path: build
+
+only-main-filter: &only-main-filter
+  filters:
+    branches:
+      only: main
+
+build-deploy-jobs-main: &build-deploy-jobs-main
+  jobs:
+    - build:
+        <<: *only-main-filter
+    - heroku/push-docker-image:
+        <<: *only-main-filter
+        requires:
+          - build
+        pre-deploy:
+          - setup_remote_docker
+          - attach_workspace:
+              at: .
+
+workflows:
+  build-deploy-cron:
+    <<: *build-deploy-jobs-main
+    triggers:
+      - schedule:
+          <<: *only-main-filter
+          cron: "0 * * * *" # Hourly
+
+  build-deploy-on-push:
+    <<: *build-deploy-jobs-main
